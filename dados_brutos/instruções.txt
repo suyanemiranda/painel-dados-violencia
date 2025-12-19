@@ -1,0 +1,16 @@
+## Como usar este notebook
+
+1. Baixe os arquivos DBC do SINAN no site oficial:
+   ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS/
+
+2. Utilize o TabWin para descompactar os arquivos .dbc para .dbf.
+
+3. Coloque os arquivos na pasta:
+   dados_brutos/
+
+4. Execute o notebook do início ao fim.
+
+5. Os dados tratados serão gerados na pasta:
+   dados_processados/
+
+Tutorial utilizado para baixar dados do DataSUS: https://www.youtube.com/watch?v=L328u5NqAIo
