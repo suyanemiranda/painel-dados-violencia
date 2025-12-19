@@ -1,211 +1,207 @@
-# 📘 **README — Pipeline de Tratamento dos Dados do SINAN (Violência contra a Mulher — Salvador/BA)**
+# 📊 Pipeline de Tratamento dos Dados do SINAN
 
-Este repositório contém o notebook e o pipeline completo para processamento dos arquivos do **SINAN — Violência Interpessoal e Autoprovocada**, com foco em:
+## Violência contra Mulheres em Salvador (BA)
 
-* **Mulheres (CS_SEXO = “F”)**
-* **Violência Autoprovocada (LES_AUTOP != “1”)**
-* **Município de Salvador (ID_MUNICIP = 292740)**
-* **Estado da Bahia (SG_UF_NOT = “BA”)**
-* Anos **2014 a 2023**, ou qualquer conjunto de DBFs disponíveis.
+Este repositório contém o **pipeline completo de tratamento, filtragem e recodificação** dos dados do **SINAN – Sistema de Informação de Agravos de Notificação**, módulo **Violência Interpessoal e Autoprovocada**, com foco em **mulheres vítimas de violência não autoprovocada no município de Salvador (BA)**.
 
-O objetivo é produzir um banco de dados padronizado e limpo para uso em análises estatísticas, estudos acadêmicos e visualização em dashboards (Power BI, Tableau, Metabase ou aplicações web).
+O projeto foi desenvolvido no contexto de um **Trabalho de Conclusão de Curso (TCC)** em Sistemas de Informação, com o objetivo de subsidiar análises estatísticas e visualizações de dados em dashboards.
 
 ---
 
-# 📂 **Estrutura de Pastas**
+## 📥 Fonte oficial dos dados
+
+Os dados utilizados são provenientes do **repositório oficial do DATASUS**, no formato DBF, versão **FINAIS**:
 
 ```
-seu-repo/
+ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS/
+```
+
+Os arquivos seguem o padrão:
+
+```
+VIOLBR14.dbf  → 2014
+VIOLBR15.dbf  → 2015
+...
+VIOLBR24.dbf  → 2023
+```
+
+Esses arquivos representam os dados **consolidados e validados**, adequados para uso acadêmico e científico.
+
+> ⚠️ Os arquivos DBF **não são incluídos neste repositório**, pois são volumosos (>100MB) e não devem ser versionados.
+
+---
+
+## 📂 Estrutura do repositório
+
+```
+PAINEL-DADOS-VIOLENCIA/
 │
 ├── dados_brutos/
-│    ├── VIOLBR14.dbf
-│    ├── VIOLBR15.dbf
-│    ├── ...
-│    └── VIOLBR24.dbf
+│   └── instruções.txt
 │
 ├── dados_processados/
-│    ├── sinan_SSA_mulheres_2014.parquet
-│    ├── ...
-│    └── sinan_final_SSA_mulheres.parquet
+│   ├── sinan_SSA_mulheres_2014.parquet
+│   ├── sinan_SSA_mulheres_2015.parquet
+│   ├── ...
+│   ├── sinan_final_SSA_mulheres.csv
+│   └── sinan_final_SSA_mulheres.parquet
 │
 ├── notebook_sinan.ipynb
+├── requirements.txt
 └── README.md
 ```
 
----
-
-# ⚙️ **Requisitos**
-
-O notebook utiliza:
-
-* Python 3.8+
-* Pandas
-* dbfread
-* unidecode
-* pyarrow (para salvar Parquet)
-
-Para instalar:
-
-```bash
-pip install pandas dbfread unidecode pyarrow
-```
+* `notebook_sinan.ipynb` → pipeline completo de tratamento
+* `dados_processados/` → arquivos finais prontos para análise e dashboards
+* `requirements.txt` → dependências do projeto
 
 ---
 
-# 🧠 **Sobre a Estrutura do SINAN (Variáveis Importantes)**
+## ☁️ Como os dados são processados
 
-### ✔ Sexo (CS_SEXO)
+O processamento é realizado **no Google Colab**, utilizando o sistema de arquivos temporário (`/content`):
 
-* “M” = Masculino
-* “F” = Feminino
-* “I” = Ignorado
-
-### ✔ Raça/Cor (CS_RACA)
-
-| Código | Significado |
-| ------ | ----------- |
-| 1      | Branca      |
-| 2      | Preta       |
-| 3      | Amarela     |
-| 4      | Parda       |
-| 5      | Indígena    |
-| 9      | Ignorado    |
-
-### ✔ Idade (NU_IDADE_N)
-
-Formato composto:
-
-| Dígito 1 | Unidade |
-| -------- | ------- |
-| 1        | Horas   |
-| 2        | Dias    |
-| 3        | Meses   |
-| 4        | Anos    |
-
-Exemplos:
-
-* **4018 → 18 anos**
-* **3009 → 9 meses**
-
-O notebook converte automaticamente para **IDADE_ANOS** e **FAIXA_ETARIA**.
-
-### ✔ Tipo de Violência (ex.: VIOL_FISIC, VIOL_PSICO)
-
-* “1” = Sim
-* “2” = Não
-* “9” = Ignorado
-
-Também é criada uma coluna **TIPO_VIOLENCIA** consolidada.
+1. Os arquivos DBF são **enviados manualmente** para o Colab durante a sessão.
+2. O notebook lê cada DBF **ano a ano**, evitando estouro de memória.
+3. Os dados são filtrados, tratados e recodificados.
+4. Os arquivos finais são exportados em formato **Parquet** e **CSV**.
+5. Apenas os dados tratados são enviados para este repositório.
 
 ---
 
-# 🔍 **Filtros Aplicados Pelo Pipeline**
+## 🔍 Filtros aplicados
 
-O notebook mantém apenas registros que atendam *simultaneamente*:
-
-### 1. Mulheres
+Os registros mantidos no dataset final atendem **simultaneamente** aos seguintes critérios:
 
 ```python
-CS_SEXO == "F"
+CS_SEXO == "F"                 # Mulheres
+SG_UF_NOT == 29 ou "BA"        # Bahia
+ID_MUNICIP == 292740           # Salvador (município de notificação)
+LES_AUTOP != "1"               # Violência NÃO autoprovocada
 ```
 
-### 2. Estado da Bahia
-
-```python
-SG_UF_NOT == "BA"
-```
-
-### 3. Município de Salvador
-
-```python
-ID_MUNICIP == 292740
-```
-
-### 4. Violência Autoprovocada
-
-```python
-LES_AUTOP != "1"
-```
+Esses filtros garantem consistência territorial e temática com o objetivo do estudo.
 
 ---
 
-# 🧼 **Etapas do Pipeline**
+## 🔄 Tratamento da idade
 
-O notebook realiza automaticamente:
+A variável `NU_IDADE_N` é convertida corretamente para idade em anos (`IDADE_ANOS`), considerando sua codificação oficial:
 
-1. **Leitura de cada arquivo DBF individualmente** (tamanho reduzido → sem estourar RAM).
-2. **Aplicação dos filtros** (sexo, UF, município, tipo de violência).
-3. **Seleção das colunas relevantes** (`KEEP_COLS_BASE`).
-4. **Criação da coluna `ano`** a partir do nome do arquivo.
-5. **Conversão de idade NU_IDADE_N → idade em anos**.
-6. **Geração de um arquivo Parquet por ano**.
-7. **Concatenação de todos os anos tratados**.
-8. **Padronização das variáveis categóricas** (sexo, raça, violências).
-9. **Criação da variável consolidada TIPO_VIOLENCIA**.
-10. **Exportação do dataset final** em Parquet e CSV.
+* 1xxx → horas
+* 2xxx → dias
+* 3xxx → meses
+* 4xxx → anos
+
+Também é criada a variável:
+
+* `FAIXA_ETARIA` (0–9, 10–14, 15–19, ..., 60+)
 
 ---
 
-# 📊 **Variáveis Derivadas Criadas**
+## 🧾 Recodificação das variáveis
 
-| Variável         | Descrição                                      |
-| ---------------- | ---------------------------------------------- |
-| `IDADE_ANOS`     | Conversão numérica correta da idade            |
-| `FAIXA_ETARIA`   | Idade agrupada em faixas (0–9, 10–14, ... 60+) |
-| `CS_SEXO_DESC`   | Sexo por extenso                               |
-| `CS_RACA_DESC`   | Raça/cor por extenso                           |
-| `TIPO_VIOLENCIA` | Lista consolidada de tipos de violência        |
+Grande parte das variáveis do SINAN é codificada numericamente.
+Para permitir **análises e gráficos interpretáveis**, o pipeline cria **colunas descritivas (`*_DESC`)**.
+
+### Exemplos de variáveis recodificadas:
+
+### Dados sociodemográficos
+
+* `CS_SEXO_DESC`
+* `CS_RACA_DESC`
+* `CS_ESCOL_DESC`
+* `SIT_CONJUG_DESC`
+* `CS_GESTANT_DESC`
+
+### Tipos de violência
+
+* `VIOL_FISIC_DESC`
+* `VIOL_PSICO_DESC`
+* `VIOL_SEXU_DESC`
+* `VIOL_NEGLI_DESC`
+* `VIOL_FINAN_DESC`
+* entre outras
+
+### Meio de agressão
+
+* `AG_FORCA_DESC`
+* `AG_CORTE_DESC`
+* `AG_AMEACA_DESC`
+* etc.
+
+### Encaminhamentos e rede de proteção
+
+* `ENC_SAUDE_DESC`
+* `ENC_DEAM_DESC`
+* `ENC_CREAS_DESC`
+* `DEFEN_PUBL_DESC`
+* etc.
+
+### Relação autor–vítima
+
+Além das variáveis individuais (`REL_CONJ`, `REL_PAI`, etc.), é criada a variável consolidada:
+
+* **`RELACAO_AUTOR`** → texto único com o vínculo identificado
 
 ---
 
-# 📁 **Saídas Geradas**
+## 📦 Arquivos gerados
 
-Os seguintes arquivos aparecem em `dados_processados/`:
+Na pasta `dados_processados/` encontram-se:
 
-### Dataset final consolidado:
+* Arquivos Parquet **por ano**
+* Um arquivo final consolidado:
 
 ```
 sinan_final_SSA_mulheres.parquet
 sinan_final_SSA_mulheres.csv
 ```
 
----
-
-# ▶️ **Como Executar o Notebook**
-
-### No Google Colab:
-
-1. Suba os arquivos DBF na pasta `dados_brutos/` do Google Drive ou do ambiente local.
-2. Rode todas as células do notebook.
-3. Os arquivos processados aparecerão em `dados_processados/`.
-
-### Localmente (Jupyter, VS Code):
-
-1. Crie as pastas conforme a estrutura indicada.
-2. Coloque os DBFs em `dados_brutos/`.
-3. Execute o notebook.
-4. Os resultados aparecerão na pasta `dados_processados/`.
+Este arquivo é o **dataset principal** para análises e dashboards.
 
 ---
 
-# 📈 **Uso em Dashboards**
+## 📈 Uso em dashboards e análises
 
-O arquivo final pode ser usado diretamente em:
+Os arquivos `.parquet` e `.csv` podem ser utilizados diretamente em:
 
 * Power BI
 * Tableau
-* Qlik
 * Metabase
-* Dash/Plotly
+* Apache Superset
 * Streamlit
-* Superset
+* Dash / Plotly
 
-Recomendação: use sempre o arquivo **Parquet**, pois é mais leve e rápido.
+Recomenda-se utilizar **Parquet**, por ser mais leve e eficiente.
 
 ---
 
-# ✨ **Créditos e Observações**
+## ❌ Por que os DBFs não estão no GitHub?
 
-Este pipeline foi desenvolvido para um Trabalho de Conclusão de Curso na área de **Sistemas de Informação**, com foco na visualização de dados sobre **violência contra a mulher na cidade de Salvador**, utilizando dados brutos do SINAN (Ministério da Saúde).
+* Arquivos muito grandes (100–300MB)
+* Limite de tamanho do GitHub
+* Boas práticas de ciência de dados
+* Evita versionar dados brutos sensíveis
 
+O repositório distribui apenas:
+
+✔ código
+✔ documentação
+✔ dados tratados e anonimizados
+
+---
+
+## 🎓 Contexto acadêmico
+
+Este pipeline foi desenvolvido como parte de um **Trabalho de Conclusão de Curso (TCC)** em Sistemas de Informação, com foco na **visualização de dados sobre violência contra mulheres em Salvador (BA)**, utilizando dados públicos do SINAN.
+
+---
+
+## 📌 Observação final
+
+O notebook disponível neste repositório é a **versão pública e reprodutível** do pipeline.
+A versão operacional completa foi executada no Google Colab para geração dos arquivos finais aqui disponibilizados.
+
+---
 
