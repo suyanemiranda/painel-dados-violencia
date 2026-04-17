@@ -8,26 +8,57 @@ O projeto foi desenvolvido no contexto de um **Trabalho de Conclusão de Curso (
 
 ---
 
+## 🎯 Objetivo
+
+Construir uma base analítica estruturada para apoiar:
+
+- 👩‍🦰 análise do perfil das vítimas
+- ⚠️ compreensão da dinâmica da violência
+- 🧑‍🤝‍🧑 estudo da relação entre vítima e provável autor
+- 🏥 avaliação da gravidade e das lesões
+- 🏛️ análise da resposta institucional
+- 🗺️ leitura territorial e temporal das notificações
+
+---
+
+## 📌 Recorte analítico adotado
+
+O pipeline mantém apenas registros que atendem simultaneamente aos seguintes critérios:
+
+- ✔️ vítimas do sexo feminino (`CS_SEXO = "F"`)
+- ✔️ notificadas na Bahia
+- ✔️ município de Salvador (`ID_MUNICIP = 292740`)
+- ❌ exclusão de violência autoprovocada (`LES_AUTOP != "1"`)
+
+Esses filtros garantem consistência territorial e temática com o objetivo do estudo.
+
+---
+
 ## 📥 Fonte oficial dos dados
 
-Os dados utilizados são provenientes do **repositório oficial do DATASUS**, no formato DBF, versão **FINAIS**:
+Os dados principais foram obtidos via FTP do DATASUS no diretório:
 
-```
-ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS/
-```
+`ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS/`
 
-Os arquivos seguem o padrão:
+Os arquivos anuais do agravo de violência são disponibilizados em formato `.DBC`, por exemplo:
 
-```
-VIOLBR14.dbf  → 2014
-VIOLBR15.dbf  → 2015
-...
-VIOLBR24.dbf  → 2023
-```
+- `VIOLBR14.DBC`
+- `VIOLBR15.DBC`
+- `VIOLBR16.DBC`
+- ...
+- `VIOLBR24.DBC`
+
+As tabelas auxiliares foram obtidas no diretório:
+
+`ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/AUXILIAR/`
+
+por meio do arquivo compactado:
+
+- `TAB_SINANNET.zip`
 
 Esses arquivos representam os dados **consolidados e validados**, adequados para uso acadêmico e científico.
 
-> ⚠️ Os arquivos DBF **não são incluídos neste repositório**, pois são volumosos (>100MB) e não devem ser versionados.
+> ⚠️ Os arquivos DBC **não são incluídos neste repositório**, pois são volumosos (>100MB) e não devem ser versionados.
 
 ---
 
@@ -36,19 +67,14 @@ Esses arquivos representam os dados **consolidados e validados**, adequados para
 ```
 PAINEL-DADOS-VIOLENCIA/
 │
-├── dados_brutos/
-│   └── instruções.txt
-│
-├── dados_processados/
-│   ├── sinan_SSA_mulheres_2014.parquet
-│   ├── sinan_SSA_mulheres_2015.parquet
-│   ├── ...
-│   ├── sinan_final_SSA_mulheres.csv
-│   └── sinan_final_SSA_mulheres.parquet
-│
 ├── notebook_sinan.ipynb
+├── README.md
 ├── requirements.txt
-└── README.md
+├── instruções.md
+│
+├── dados_brutos/              # gerado automaticamente
+├── tabelas_auxiliares/        # gerado automaticamente
+└── dados_processados/
 ```
 
 * `notebook_sinan.ipynb` → pipeline completo de tratamento
@@ -57,45 +83,44 @@ PAINEL-DADOS-VIOLENCIA/
 
 ---
 
-## ☁️ Como os dados são processados
+## 🔄 Fluxo do pipeline
 
-O processamento é realizado **no Google Colab**, utilizando o sistema de arquivos temporário (`/content`):
+O notebook executa as seguintes etapas:
 
-1. Os arquivos DBF são **enviados manualmente** para o Colab durante a sessão.
-2. O notebook lê cada DBF **ano a ano**, evitando estouro de memória.
-3. Os dados são filtrados, tratados e recodificados.
-4. Os arquivos finais são exportados em formato **Parquet** e **CSV**.
-5. Apenas os dados tratados são enviados para este repositório.
-
----
-
-## 🔍 Filtros aplicados
-
-Os registros mantidos no dataset final atendem **simultaneamente** aos seguintes critérios:
-
-```python
-CS_SEXO == "F"                 # Mulheres
-SG_UF_NOT == 29 ou "BA"        # Bahia
-ID_MUNICIP == 292740           # Salvador (município de notificação)
-LES_AUTOP != "1"               # Violência NÃO autoprovocada
-```
-
-Esses filtros garantem consistência territorial e temática com o objetivo do estudo.
+📦 instalação das dependências
+📁 criação das pastas de trabalho
+🌐 download dos arquivos principais via FTP
+🗜️ download e extração das tabelas auxiliares
+🔄 conversão dos arquivos .DBC para .DBF
+🧹 leitura, limpeza e aplicação dos filtros
+🧠 recodificação de variáveis categóricas
+🔗 integração com tabelas auxiliares úteis
+📊 criação da base analítica
+💾 exportação das saídas finais
 
 ---
 
-## 🔄 Tratamento da idade
+## 🧩 Tabelas auxiliares utilizadas
 
-A variável `NU_IDADE_N` é convertida corretamente para idade em anos (`IDADE_ANOS`), considerando sua codificação oficial:
+Após inspeção do conteúdo do pacote auxiliar, foram priorizadas as seguintes tabelas:
 
-* 1xxx → horas
-* 2xxx → dias
-* 3xxx → meses
-* 4xxx → anos
+📌 OCUPANET → ocupação
+📌 UNIDTOTAL → unidade + bairro da unidade
+📌 UNIDANET → complemento/fallback
+📌 UNIDINVEST → complemento/fallback
 
-Também é criada a variável:
+Tabelas consideradas pouco úteis, vazias ou redundantes para o recorte adotado foram descartadas do pipeline principal.
 
-* `FAIXA_ETARIA` (0–9, 10–14, 15–19, ..., 60+)
+---
+## ⚠️ Observação importante sobre o bairro
+
+A variável BAIRRO_ANALISE não representa necessariamente o bairro exato da ocorrência da violência.
+
+Na base final, ela foi construída prioritariamente a partir da unidade notificadora/investigadora, funcionando como uma aproximação territorial da notificação.
+
+Portanto, esse campo deve ser interpretado como:
+
+    bairro associado à unidade notificadora/investigadora, e não necessariamente ao local exato da violência.
 
 ---
 
@@ -150,12 +175,16 @@ Além das variáveis individuais (`REL_CONJ`, `REL_PAI`, etc.), é criada a vari
 
 Na pasta `dados_processados/` encontram-se:
 
-* Arquivos Parquet **por ano**
-* Um arquivo final consolidado:
+* Base completa:
+```
+sinan_SSA_mulheres_2014_2024_final.parquet
+sinan_SSA_mulheres_2014_2024_final.csv
+```
+* Base analítica:
 
 ```
-sinan_final_SSA_mulheres.parquet
-sinan_final_SSA_mulheres.csv
+sinan_SSA_mulheres_2014_2024_analitico.parquet
+sinan_SSA_mulheres_2014_2024_analitico.csv
 ```
 
 Este arquivo é o **dataset principal** para análises e dashboards.
@@ -192,9 +221,30 @@ O repositório distribui apenas:
 
 ---
 
+## ⚠️ Limitações
+
+📍 o bairro utilizado é uma aproximação territorial associada à unidade notificadora/investigadora
+📉 algumas variáveis do SINAN apresentam alto grau de incompletude
+🧾 determinados campos exigem interpretação cuidadosa devido à natureza administrativa e epidemiológica da notificação
+🔎 o pipeline foi otimizado para o recorte Salvador–BA e mulheres, podendo exigir ajustes para outros recortes
+
+---
+
+## 📘 Instruções de uso
+
+As instruções resumidas são:
+
+1. instalar as dependências
+2. executar o notebook em ordem
+3. aguardar o download dos arquivos do SINAN
+4. permitir a conversão .DBC → .DBF
+5. acompanhar a geração das bases final e analítica
+
+---
+
 ## 🎓 Contexto acadêmico
 
-Este pipeline foi desenvolvido como parte de um **Trabalho de Conclusão de Curso (TCC)** em Sistemas de Informação, com foco na **visualização de dados sobre violência contra mulheres em Salvador (BA)**, utilizando dados públicos do SINAN.
+Este pipeline foi desenvolvido como parte de um **Trabalho de Conclusão de Curso (TCC)** em Sistemas de Informação, com foco na **visualização de dados públicos sobre violência contra mulheres em Salvador (BA)**, a partir de registros do SINAN.
 
 ---
 
