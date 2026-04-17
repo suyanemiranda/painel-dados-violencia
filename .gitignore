@@ -1,6 +1,9 @@
 # dados brutos e temporários
 dados_brutos/
+!dados_brutos/.gitkeep
+
 tabelas_auxiliares/
+!tabelas_auxiliares/.gitkeep
 
 # arquivos brutos do SINAN
 *.DBC
