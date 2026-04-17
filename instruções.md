@@ -7,6 +7,9 @@ Este guia descreve como executar o pipeline de dados do SINAN.
 ```bash
 pip install -r requirements.txt
 
+```
+---
+
 ## 📓 2. Abrir o notebook
 
 Você pode usar:
@@ -16,11 +19,13 @@ Você pode usar:
 * VS Code
 * Google Colab
 
+---
+
 ## ▶️ 3. Execução
 
 Execute todas as células em ordem.
 
-## 🔄 Etapas do pipeline
+### 🔄 Etapas do pipeline
 1. instalação e imports
 2. criação das pastas
 3. download dos dados
@@ -32,19 +37,25 @@ Execute todas as células em ordem.
 9. criação da base analítica
 10. exportação
 
+---
+
 ## 📁 Pastas criadas automaticamente
 * dados_brutos/
 * tabelas_auxiliares/
 * dados_processados/
 
+---
+
 ## 🌐 Sobre os dados
-# Arquivos principais
+### Arquivos principais
 
 Os arquivos anuais de violência são baixados em formato .DBC.
 
-# Tabelas auxiliares
+### Tabelas auxiliares
 
 As tabelas auxiliares são baixadas a partir do arquivo TAB_SINANNET.zip.
+
+---
 
 ## 🧹 Filtros aplicados
 * vítimas do sexo feminino
@@ -52,37 +63,47 @@ As tabelas auxiliares são baixadas a partir do arquivo TAB_SINANNET.zip.
 * município de Salvador
 * exclusão de violência autoprovocada
 
+---
+
 ## 🗺️ Sobre o bairro
 
 A variável BAIRRO_ANALISE representa o bairro associado à unidade notificadora/investigadora.
 
+---
+
 ## 📦 Saídas geradas
-#Base completa
+- Base completa
 .parquet
 .csv
-#Base analítica
+- Base analítica
 .parquet
 .csv
+
+---
 
 ## 💡 Recomendação
 
 Use a base analítica para dashboards e exploração visual.
 
+---
+
 ## ⚠️ Problemas comuns
-#Timeout no FTP
+### Timeout no FTP
 
 Se a conexão cair, execute novamente a célula. Arquivos já baixados são ignorados.
 
-#Arquivos corrompidos
+### Arquivos corrompidos
 
 Se necessário, exclua o arquivo problemático e baixe novamente.
 
+---
 ## 🧠 Dicas
 * execute o notebook por blocos
 * acompanhe os logs de download
 * revise a base final antes de exportar
+---
 
-### Versão alternativa para download manual do dados
+## Versão alternativa para download manual do dados
 
 1. Baixe os arquivos DBC do SINAN no site oficial:
    ftp://ftp.datasus.gov.br/dissemin/publicos/SINAN/DADOS/FINAIS/
