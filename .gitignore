@@ -1,0 +1,14 @@
+# dados brutos e temporários
+dados_brutos/
+tabelas_auxiliares/
+
+# arquivos brutos do SINAN
+*.DBC
+*.DBF
+*.dbf
+*.dbc
+*.zip
+
+# cache e notebook
+.ipynb_checkpoints/
+__pycache__/
