@@ -10,7 +10,9 @@ O projeto foi desenvolvido no contexto de um **Trabalho de Conclusão de Curso (
 
 ## 📊 Dashboard Interativo
 
-[![Dashboard Power BI](painel-dados-violencia/preview.png)](https://app.powerbi.com/view?r=eyJrIjoiYmEzZjAxNTMtZTYyZi00ZWY3LThkMzYtZGE0ZTc2NmU1OWM0IiwidCI6ImRmNzFmNmJiLWUzY2MtNGY1Yi1iNTMyLTc5ZGUyNjFiNTFhMiJ9)
+Clique na imagem abaixo para acessar o dashboard completo no Power BI:
+
+[![Dashboard Power BI](/preview.png)](https://app.powerbi.com/view?r=eyJrIjoiYmEzZjAxNTMtZTYyZi00ZWY3LThkMzYtZGE0ZTc2NmU1OWM0IiwidCI6ImRmNzFmNmJiLWUzY2MtNGY1Yi1iNTMyLTc5ZGUyNjFiNTFhMiJ9)
 
 ## 🎯 Objetivo
 
