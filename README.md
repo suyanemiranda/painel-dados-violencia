@@ -8,6 +8,8 @@ O projeto foi desenvolvido no contexto de um **Trabalho de Conclusão de Curso (
 
 ---
 
+<iframe title="Violência Contra a Mulher em Salvador" width="1024" height="612" src="https://app.powerbi.com/view?r=eyJrIjoiYmEzZjAxNTMtZTYyZi00ZWY3LThkMzYtZGE0ZTc2NmU1OWM0IiwidCI6ImRmNzFmNmJiLWUzY2MtNGY1Yi1iNTMyLTc5ZGUyNjFiNTFhMiJ9" frameborder="0" allowFullScreen="true"></iframe>
+
 ## 🎯 Objetivo
 
 Construir uma base analítica estruturada para apoiar:
