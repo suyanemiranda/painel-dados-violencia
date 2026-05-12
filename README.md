@@ -12,7 +12,7 @@ O projeto foi desenvolvido no contexto de um **Trabalho de Conclusão de Curso (
 
 Clique na imagem abaixo para acessar o dashboard completo no Power BI:
 
-[![Dashboard Power BI](/preview.png)](https://app.powerbi.com/view?r=eyJrIjoiYmEzZjAxNTMtZTYyZi00ZWY3LThkMzYtZGE0ZTc2NmU1OWM0IiwidCI6ImRmNzFmNmJiLWUzY2MtNGY1Yi1iNTMyLTc5ZGUyNjFiNTFhMiJ9)
+[![Dashboard Power BI](/preview.png)](https://app.powerbi.com/view?r=eyJrIjoiYmEzZjAxNTMtZTYyZi00ZWY3LThkMzYtZGE0ZTc2NmU1OWM0IiwidCI6ImRmNzFmNmJiLWUzY2MtNGY1Yi1iNTMyLTc5ZGUyNjFiNTFhMiJ9&pageName=0c60682e018e4254cc2d)
 
 ## 🎯 Objetivo
 
